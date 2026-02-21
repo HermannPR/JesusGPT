@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-parchment-50: #fdfbf7;
+  --color-parchment-100: #f8f0e0;
+  --color-parchment-200: #f0e4c8;
+  --color-parchment-300: #e8d8b0;
+  --color-parchment-400: #d4bc8a;
+  --color-parchment-500: #c0a070;
+  --color-red-letter: #B22222;
+  --font-serif: 'Libre Baskerville', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  --animate-fade-in: fade-in 3s ease-in-out forwards;
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-parchment-100);
+  color: #1f2937;
+  font-family: var(--font-serif);
+  min-height: 100vh;
+}

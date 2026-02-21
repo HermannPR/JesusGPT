@@ -1,0 +1,17 @@
+{
+  "name": "jesusgpt",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run install:all && cd client && npm run build",
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "extract": "cd server && node scripts/extractGospels.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
