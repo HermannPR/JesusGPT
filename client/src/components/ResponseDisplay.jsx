@@ -17,7 +17,7 @@ export default function ResponseDisplay({ response, verses }) {
   };
 
   return (
-    <div className="space-y-4 animate-fade-in opacity-0">
+    <div className="space-y-4 animate-fade-in">
       {/* Animated Scene (shows when image exists) */}
       <AnimatedScene text={response} speaking={speaking} />
 
@@ -64,7 +64,14 @@ export default function ResponseDisplay({ response, verses }) {
             <ul className="space-y-2">
               {verses.map((v, i) => (
                 <li key={i} className="text-sm text-gray-600 leading-relaxed">
-                  <span className="font-bold text-gray-800">{v.reference}</span>
+                  <a
+                    href={`https://www.biblegateway.com/passage/?search=${encodeURIComponent(v.reference)}&version=NIV`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-parchment-600 hover:text-parchment-800 underline underline-offset-2 transition-colors"
+                  >
+                    {v.reference}
+                  </a>
                   {' — '}
                   {v.text}
                 </li>

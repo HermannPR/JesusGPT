@@ -4,7 +4,7 @@ export function useReflection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchReflection = async ({ question, language, mode }) => {
+  const fetchReflection = async ({ question, language, mode, history = [] }) => {
     setLoading(true);
     setError(null);
 
@@ -12,7 +12,7 @@ export function useReflection() {
       const response = await fetch('/api/reflect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, language, mode }),
+        body: JSON.stringify({ question, language, mode, history }),
       });
 
       if (!response.ok) {

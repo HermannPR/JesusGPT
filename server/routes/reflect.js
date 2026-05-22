@@ -9,7 +9,7 @@ const VALID_MODES = new Set(['direct', 'parable']);
 
 router.post('/', async (req, res, next) => {
   try {
-    const { question, language, mode } = req.body;
+    const { question, language, mode, history = [] } = req.body;
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'Question is required' });
@@ -28,7 +28,11 @@ router.post('/', async (req, res, next) => {
       mode === 'parable' ? 10 : 5
     );
 
-    const response = await generateReflection(question, relevantVerses, mode, language);
+    const safeHistory = Array.isArray(history)
+      ? history.filter(h => h.role && h.content).slice(-10)
+      : [];
+
+    const response = await generateReflection(question, relevantVerses, mode, language, safeHistory);
 
     res.json({
       response,

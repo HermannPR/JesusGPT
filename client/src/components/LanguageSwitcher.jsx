@@ -7,21 +7,21 @@ const LANGUAGES = [
   { code: 'gr', label: 'GR', name: 'Ελληνικά' },
 ];
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ compact }) {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex justify-center gap-2 mt-4">
+    <div className={`flex gap-1.5 ${compact ? '' : 'justify-center mt-4'}`}>
       {LANGUAGES.map(lang => (
         <button
           key={lang.code}
           onClick={() => setLanguage(lang.code)}
           title={lang.name}
           className={`
-            px-4 py-2 rounded-md font-sans text-sm transition-all duration-200
+            px-2.5 py-1 rounded-md font-sans text-xs font-semibold transition-all duration-200
             ${language === lang.code
-              ? 'bg-parchment-400 text-gray-900 font-bold shadow-sm'
-              : 'bg-parchment-200 text-gray-600 hover:bg-parchment-300'
+              ? 'bg-parchment-400 text-gray-900 shadow-sm'
+              : 'bg-parchment-100 text-gray-500 hover:bg-parchment-200'
             }
           `}
         >

@@ -1,84 +1,104 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { ArrowUpIcon } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useReflection } from '../hooks/useReflection';
-import LoadingSpinner from './LoadingSpinner';
 
-export default function QuestionInput({ onResponse, disabled }) {
+const MIN_H = 72;
+const MAX_H = 200;
+
+export default function QuestionInput({ onResponse, onAsk, history = [] }) {
   const { t, language } = useLanguage();
   const [question, setQuestion] = useState('');
   const [mode, setMode] = useState('direct');
   const { loading, error, fetchReflection } = useReflection();
+  const textareaRef = useRef(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!question.trim() || disabled || loading) return;
+  const adjustHeight = useCallback((reset) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = `${MIN_H}px`;
+    if (!reset) el.style.height = `${Math.min(el.scrollHeight, MAX_H)}px`;
+  }, []);
 
-    const data = await fetchReflection({ question, language, mode });
-    if (data) {
-      onResponse(data);
+  useEffect(() => {
+    if (textareaRef.current) textareaRef.current.style.height = `${MIN_H}px`;
+  }, []);
+
+  const submit = async () => {
+    const text = question.trim();
+    if (!text || loading) return;
+    setQuestion('');
+    adjustHeight(true);
+    onAsk?.();
+    const data = await fetchReflection({ question: text, language, mode, history });
+    if (data) onResponse(text, data);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit();
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Mode Toggle */}
-      <div className="flex gap-6 justify-center">
-        <label className="flex items-center gap-2 cursor-pointer font-sans text-sm text-gray-700">
-          <input
-            type="radio"
-            name="mode"
-            value="direct"
-            checked={mode === 'direct'}
-            onChange={(e) => setMode(e.target.value)}
-            className="w-4 h-4 accent-parchment-500"
-          />
-          {t('modeDirectLabel')}
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer font-sans text-sm text-gray-700">
-          <input
-            type="radio"
-            name="mode"
-            value="parable"
-            checked={mode === 'parable'}
-            onChange={(e) => setMode(e.target.value)}
-            className="w-4 h-4 accent-parchment-500"
-          />
-          {t('modeParableLabel')}
-        </label>
+    <div className="flex flex-col gap-1">
+      <div className="rounded-2xl border border-parchment-300 bg-white shadow-sm focus-within:border-parchment-500 focus-within:shadow-md transition-all overflow-hidden">
+        {/* Textarea — no absolute children competing with it */}
+        <textarea
+          ref={textareaRef}
+          value={question}
+          onChange={(e) => { setQuestion(e.target.value); adjustHeight(); }}
+          onKeyDown={handleKeyDown}
+          placeholder={t('inputPlaceholder')}
+          disabled={loading}
+          style={{ height: MIN_H, maxHeight: MAX_H }}
+          className="w-full px-4 py-3 resize-none bg-transparent font-serif text-base text-gray-800
+                     placeholder:text-parchment-300 focus:outline-none disabled:opacity-50 overflow-auto block"
+        />
+
+        {/* Divider + controls row — never overlaps textarea */}
+        <div className="border-t border-parchment-100 flex items-center justify-between px-3 py-2 bg-parchment-50/50">
+          {/* Mode pills */}
+          <div className="flex gap-1">
+            {[['direct', t('modeDirectLabel')], ['parable', t('modeParableLabel')]].map(([m, label]) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                disabled={loading}
+                className={`px-3 py-1 rounded-full text-xs font-sans font-semibold transition-colors
+                  ${mode === m
+                    ? 'bg-parchment-400 text-gray-900'
+                    : 'text-parchment-500 hover:bg-parchment-100'
+                  } disabled:opacity-40`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Send button */}
+          <button
+            type="button"
+            onClick={submit}
+            disabled={loading || !question.trim()}
+            className={`p-1.5 rounded-lg transition-all flex items-center justify-center
+              ${question.trim() && !loading
+                ? 'bg-parchment-500 hover:bg-parchment-600 text-white'
+                : 'bg-parchment-100 text-parchment-300 cursor-not-allowed'
+              }`}
+          >
+            {loading
+              ? <span className="w-4 h-4 block border-2 border-parchment-300 border-t-parchment-600 rounded-full animate-spin" />
+              : <ArrowUpIcon className="w-4 h-4" />
+            }
+          </button>
+        </div>
       </div>
 
-      {/* Text Input */}
-      <textarea
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder={t('inputPlaceholder')}
-        disabled={disabled || loading}
-        rows={4}
-        className="w-full p-4 rounded-lg bg-white/80 border-2 border-parchment-300
-                   focus:border-parchment-500 focus:outline-none resize-none
-                   font-serif text-lg placeholder:text-parchment-400
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   transition-colors"
-      />
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={disabled || loading || !question.trim()}
-        className="w-full py-3 bg-parchment-400 hover:bg-parchment-500
-                   text-gray-900 font-serif text-xl rounded-lg
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   transition-all duration-200 shadow-sm hover:shadow-md"
-      >
-        {loading ? <LoadingSpinner /> : t('buttonText')}
-      </button>
-
-      {/* Error Display */}
-      {error && (
-        <p className="text-center text-red-letter font-sans text-sm">
-          {t('errorMessage')}
-        </p>
-      )}
-    </form>
+      {error && <p className="text-center text-red-500 font-sans text-xs">{t('errorMessage')}</p>}
+      <p className="text-center text-parchment-300 font-sans text-xs">Enter to send · Shift+Enter for new line</p>
+    </div>
   );
 }

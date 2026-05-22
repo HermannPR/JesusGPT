@@ -1,7 +1,15 @@
 import { useLanguage } from '../context/LanguageContext';
 
-export default function Header() {
+export default function Header({ compact }) {
   const { t } = useLanguage();
+
+  if (compact) {
+    return (
+      <h1 className="font-serif text-xl text-red-letter tracking-wide">
+        {t('appTitle')}
+      </h1>
+    );
+  }
 
   return (
     <header className="text-center pt-10 pb-4">
