@@ -76,8 +76,8 @@ async function generateWithGemini(systemPrompt, userPrompt) {
   const gemini = getGemini();
   if (!gemini) throw new Error('Gemini not available');
 
-  console.log('[Gemini] Fallback: using gemini-2.0-flash');
-  const model = gemini.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  console.log('[Gemini] Fallback: using gemini-3.6-flash');
+  const model = gemini.getGenerativeModel({ model: 'gemini-3.6-flash' });
 
   const result = await model.generateContent({
     contents: [
@@ -96,15 +96,15 @@ export async function generateReflection(question, relevantVerses, mode, languag
   const context = buildContextPrompt(relevantVerses);
   const userPrompt = `${context}\n\nQuestion from the seeker: ${question}`;
 
-  // Try Groq first, fall back to Gemini
+  // Try Gemini first, fall back to Groq
   try {
-    return await generateWithGroq(systemPrompt, userPrompt, mode, history);
+    return await generateWithGemini(systemPrompt, userPrompt);
   } catch (err) {
-    console.warn(`[Groq] Failed: ${err.message}. Falling back to Gemini...`);
+    console.warn(`[Gemini] Failed: ${err.message}. Falling back to Groq...`);
     try {
-      return await generateWithGemini(systemPrompt, userPrompt);
+      return await generateWithGroq(systemPrompt, userPrompt, mode, history);
     } catch (fallbackErr) {
-      console.error(`[Gemini] Fallback also failed: ${fallbackErr.message}`);
+      console.error(`[Groq] Fallback also failed: ${fallbackErr.message}`);
       throw new Error('All AI providers failed. Please try again later.');
     }
   }
