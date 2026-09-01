@@ -4,6 +4,12 @@
 
 An AI Bible-study chat where the model answers in the first-person voice of Jesus, grounded in the Gospels. Ask a question, get an answer rooted in relevant verses — either a direct response or an original parable — in English, Spanish, Latin, or Greek.
 
+## The hard part
+
+The hard part was keeping the model from just making things up. The Gospels are the only source, so every answer goes through a retrieval step: keyword and theme matching over `server/data/gospels.json` pulls the relevant verses, and only those verses are handed to the model (Gemini primary, Groq `llama-3.3-70b-versatile` as a fallback). That grounding is what lets it speak as Jesus without hallucinating doctrine. It's also multilingual across English, Spanish, Latin and Greek, with the dataset rebuilt from the web by `npm run extract` — so retrieval has to work in four languages from one source set.
+
+The result: ask a question, get an answer that cites the verses it's based on, or an original parable in the same register.
+
 ## Architecture
 
 ```
