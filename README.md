@@ -1,5 +1,7 @@
 # JesusGPT — Red Letter Reflection
 
+<p><img src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" height="20" alt="React"> <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" height="20" alt="Vite"> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" height="20" alt="TypeScript"> <img src="https://img.shields.io/badge/Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white" height="20" alt="Gemini"></p>
+
 An AI Bible-study chat where the model answers in the first-person voice of Jesus, grounded in the Gospels. Ask a question, get an answer rooted in relevant verses — either a direct response or an original parable — in English, Spanish, Latin, or Greek.
 
 ## Architecture
