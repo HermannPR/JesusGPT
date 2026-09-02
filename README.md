@@ -67,4 +67,5 @@ v1.0.0 — working. UI default language is English with in-app language switchin
 ## Screenshots
 
 ![Main view](docs/screenshot.png)
+![Chat reflection](docs/chat-reflection.png)
 
