@@ -18,6 +18,8 @@ export const translations = {
     emptySubtitle: 'He is listening.',
     enterHint: 'Enter to send · Shift+Enter for new line',
     languageLabel: 'Language',
+    modeDirectShort: 'Direct',
+    modeParableShort: 'Parable',
   },
   es: {
     appTitle: 'Reflexión de Letras Rojas',
@@ -38,6 +40,8 @@ export const translations = {
     emptySubtitle: 'Él te escucha.',
     enterHint: 'Enter para enviar · Shift+Enter para nueva línea',
     languageLabel: 'Idioma',
+    modeDirectShort: 'Directa',
+    modeParableShort: 'Parábola',
   },
   la: {
     appTitle: 'Reflectio Verborum Rubrorum',
@@ -58,6 +62,8 @@ export const translations = {
     emptySubtitle: 'Ille te audit.',
     enterHint: 'Enter ut mittas · Shift+Enter pro nova linea',
     languageLabel: 'Lingua',
+    modeDirectShort: 'Directa',
+    modeParableShort: 'Parabola',
   },
   gr: {
     appTitle: 'Ἐν Ἐρυθροῖς Γράμμασι',
@@ -65,7 +71,7 @@ export const translations = {
     inputPlaceholder: 'Τί ἐν τῇ καρδίᾳ σου;',
     buttonText: 'Ζητεῖν Σοφίαν',
     modeDirectLabel: 'Άμεση Σοφία',
-    modeParableLabel: 'Λειτουργία Παραβολής',
+    modeParableLabel: 'Παραβολή',
     selahText: 'Selah',
     selahSubtext: 'Σταμάτα και σκέψου',
     footerDisclaimer: 'Αυτό είναι ένα εργαλείο στοχασμού AI, όχι μια θεϊκή οντότητα.',
@@ -78,5 +84,7 @@ export const translations = {
     emptySubtitle: 'Σε ακούει.',
     enterHint: 'Enter για αποστολή · Shift+Enter για νέα γραμμή',
     languageLabel: 'Γλώσσα',
+    modeDirectShort: 'Σοφία',
+    modeParableShort: 'Παραβολή',
   },
 };

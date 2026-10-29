@@ -65,26 +65,31 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
           rows={1}
           style={{ height: minHeight(), maxHeight: MAX_H }}
           className="w-full px-4 py-3 resize-none bg-transparent font-serif text-base text-gray-800
-                     placeholder:text-parchment-300 focus:outline-none disabled:opacity-50 overflow-auto block"
+                     placeholder:text-parchment-500 focus:outline-none disabled:opacity-50 overflow-auto block"
         />
 
         {/* Divider + controls row — never overlaps textarea */}
         <div className="border-t border-parchment-100 flex items-center justify-between gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-parchment-50/50">
           {/* Mode pills */}
           <div className="flex gap-1 min-w-0">
-            {[['direct', t('modeDirectLabel')], ['parable', t('modeParableLabel')]].map(([m, label]) => (
+            {[
+              ['direct', t('modeDirectLabel'), t('modeDirectShort')],
+              ['parable', t('modeParableLabel'), t('modeParableShort')],
+            ].map(([m, label, short]) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
                 disabled={loading}
-                className={`px-3 py-3 sm:py-1 rounded-full text-xs font-sans font-semibold leading-4 transition-colors
+                className={`px-3 py-3 sm:py-1 rounded-full text-xs font-sans font-semibold leading-4 whitespace-nowrap transition-colors
                   ${mode === m
                     ? 'bg-parchment-400 text-gray-900'
                     : 'text-parchment-500 hover:bg-parchment-100'
                   } disabled:opacity-40`}
               >
-                {label}
+                {/* Narrow phones get the short label so both pills stay on one line */}
+                <span className="min-[400px]:hidden">{short}</span>
+                <span className="hidden min-[400px]:inline">{label}</span>
               </button>
             ))}
           </div>
