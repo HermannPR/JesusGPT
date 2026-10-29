@@ -73,9 +73,9 @@ function App() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain px-4 py-6">
         <div className="max-w-2xl mx-auto flex flex-col gap-8">
           {messages.length === 0 && !loading && (
-            <div className="flex flex-col items-center justify-center mt-16 sm:mt-24 gap-3 opacity-50 text-center">
-              <p className="font-serif text-2xl text-parchment-500">{t('emptyTitle')}</p>
-              <p className="font-serif text-parchment-400 italic">{t('emptySubtitle')}</p>
+            <div className="flex flex-col items-center justify-center mt-16 sm:mt-24 gap-3 text-center">
+              <p className="font-serif text-2xl text-parchment-600">{t('emptyTitle')}</p>
+              <p className="font-serif text-parchment-700 italic">{t('emptySubtitle')}</p>
             </div>
           )}
 

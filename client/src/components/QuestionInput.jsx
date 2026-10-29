@@ -69,7 +69,7 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
         />
 
         {/* Divider + controls row — never overlaps textarea */}
-        <div className="border-t border-parchment-100 flex items-center justify-between gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-parchment-50/50">
+        <div className="border-t border-parchment-100 flex items-center justify-between gap-2 px-3 py-1.5 sm:py-2 bg-parchment-50/50">
           {/* Mode pills */}
           <div className="flex gap-1 min-w-0">
             {[
