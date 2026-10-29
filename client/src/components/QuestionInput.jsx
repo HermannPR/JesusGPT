@@ -6,7 +6,7 @@ import { useReflection } from '../hooks/useReflection';
 const MIN_H = 72;
 const MAX_H = 200;
 
-export default function QuestionInput({ onResponse, onAsk, history = [] }) {
+export default function QuestionInput({ onResponse, onAsk, onFail, history = [] }) {
   const { t, language } = useLanguage();
   const [question, setQuestion] = useState('');
   const [mode, setMode] = useState('direct');
@@ -31,7 +31,14 @@ export default function QuestionInput({ onResponse, onAsk, history = [] }) {
     adjustHeight(true);
     onAsk?.();
     const data = await fetchReflection({ question: text, language, mode, history });
-    if (data) onResponse(text, data);
+    if (data) {
+      onResponse(text, data);
+    } else {
+      // Give the question back so the seeker can send it again
+      setQuestion(text);
+      requestAnimationFrame(() => adjustHeight(false));
+      onFail?.();
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -97,7 +104,7 @@ export default function QuestionInput({ onResponse, onAsk, history = [] }) {
         </div>
       </div>
 
-      {error && <p className="text-center text-red-500 font-sans text-xs">{t('errorMessage')}</p>}
+      {error && <p role="alert" className="text-center text-red-600 font-sans text-sm">{t('errorMessage')}</p>}
       <p className="text-center text-parchment-300 font-sans text-xs">Enter to send · Shift+Enter for new line</p>
     </div>
   );

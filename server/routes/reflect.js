@@ -28,14 +28,19 @@ router.post('/', async (req, res, next) => {
       mode === 'parable' ? 10 : 5
     );
 
+    // Only plain user/assistant turns reach the models (no injected system messages)
     const safeHistory = Array.isArray(history)
-      ? history.filter(h => h.role && h.content).slice(-10)
+      ? history
+          .filter(h => (h?.role === 'user' || h?.role === 'assistant') && typeof h.content === 'string' && h.content.trim())
+          .slice(-10)
+          .map(h => ({ role: h.role, content: h.content.slice(0, 4000) }))
       : [];
 
-    const response = await generateReflection(question, relevantVerses, mode, language, safeHistory);
+    const { text, provider } = await generateReflection(question, relevantVerses, mode, language, safeHistory);
 
+    res.set('X-AI-Provider', provider);
     res.json({
-      response,
+      response: text,
       verses: relevantVerses.map(v => ({
         reference: `${v.book} ${v.chapter}:${v.verse}`,
         text: v.text,

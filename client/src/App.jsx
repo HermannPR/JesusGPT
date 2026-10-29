@@ -21,6 +21,7 @@ function App() {
   };
 
   const handleAsk = () => setLoading(true);
+  const handleFail = () => setLoading(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -75,7 +76,7 @@ function App() {
       {/* Pinned input bar */}
       <div className="shrink-0 border-t border-parchment-200 bg-white/90 backdrop-blur px-4 py-4">
         <div className="max-w-2xl mx-auto">
-          <QuestionInput onResponse={handleResponse} onAsk={handleAsk} history={history} />
+          <QuestionInput onResponse={handleResponse} onAsk={handleAsk} onFail={handleFail} history={history} />
         </div>
       </div>
     </div>

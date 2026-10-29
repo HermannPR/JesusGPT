@@ -1,9 +1,21 @@
 import Groq from 'groq-sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Groq models
-const GROQ_MODEL_DEEP = 'llama-3.3-70b-versatile';   // Complex theology / Parable Mode
-const GROQ_MODEL_FAST = 'llama-3.3-70b-versatile';   // Quick direct wisdom
+// Groq models (llama-3.3-70b-versatile was shut down on Aug 16, 2026)
+const GROQ_MODEL_DEEP = 'openai/gpt-oss-120b';   // Complex theology / Parable Mode
+const GROQ_MODEL_FAST = 'openai/gpt-oss-120b';   // Quick direct wisdom
+
+const GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_ATTEMPTS = 2;
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Rate limits and overloaded servers usually clear up within a second or two.
+function isTransient(err) {
+  const status = err?.status ?? err?.response?.status;
+  if ([429, 500, 502, 503, 504].includes(status)) return true;
+  return /\b(429|500|502|503|504)\b|overloaded|unavailable|rate limit|quota|timeout|fetch failed/i.test(err?.message || '');
+}
 
 let groqClient;
 let geminiClient;
@@ -64,7 +76,10 @@ async function generateWithGroq(systemPrompt, userPrompt, mode, history = []) {
       { role: 'user', content: userPrompt },
     ],
     temperature: 0.7,
-    max_tokens: mode === 'parable' ? 600 : 300,
+    // gpt-oss reasons before answering and those tokens count toward the limit
+    reasoning_effort: 'low',
+    include_reasoning: false,
+    max_tokens: mode === 'parable' ? 2000 : 1200,
   });
 
   const raw = completion.choices[0]?.message?.content || '';
@@ -72,23 +87,34 @@ async function generateWithGroq(systemPrompt, userPrompt, mode, history = []) {
   return raw.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim();
 }
 
-async function generateWithGemini(systemPrompt, userPrompt) {
+async function generateWithGemini(systemPrompt, userPrompt, history = []) {
   const gemini = getGemini();
   if (!gemini) throw new Error('Gemini not available');
 
-  console.log('[Gemini] Fallback: using gemini-3.6-flash');
-  const model = gemini.getGenerativeModel({ model: 'gemini-3.6-flash' });
+  const model = gemini.getGenerativeModel({ model: GEMINI_MODEL, systemInstruction: systemPrompt });
 
-  const result = await model.generateContent({
-    contents: [
-      {
-        role: 'user',
-        parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
-      },
-    ],
-  });
+  // Gemini calls the assistant "model" and expects the conversation to open with the user.
+  const turns = history.map(h => ({
+    role: h.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: h.content }],
+  }));
+  while (turns.length && turns[0].role !== 'user') turns.shift();
 
-  return result.response.text();
+  const request = { contents: [...turns, { role: 'user', parts: [{ text: userPrompt }] }] };
+
+  for (let attempt = 1; ; attempt++) {
+    try {
+      console.log(`[Gemini] Using model: ${GEMINI_MODEL} (attempt ${attempt})`);
+      const result = await model.generateContent(request);
+      const text = result.response.text().trim();
+      if (!text) throw new Error('Gemini returned an empty response');
+      return text;
+    } catch (err) {
+      if (attempt >= GEMINI_ATTEMPTS || !isTransient(err)) throw err;
+      console.warn(`[Gemini] Attempt ${attempt} failed: ${err.message}. Retrying...`);
+      await sleep(800 * attempt);
+    }
+  }
 }
 
 export async function generateReflection(question, relevantVerses, mode, language, history = []) {
@@ -98,11 +124,13 @@ export async function generateReflection(question, relevantVerses, mode, languag
 
   // Try Gemini first, fall back to Groq
   try {
-    return await generateWithGemini(systemPrompt, userPrompt);
+    return { text: await generateWithGemini(systemPrompt, userPrompt, history), provider: 'gemini' };
   } catch (err) {
     console.warn(`[Gemini] Failed: ${err.message}. Falling back to Groq...`);
     try {
-      return await generateWithGroq(systemPrompt, userPrompt, mode, history);
+      const text = await generateWithGroq(systemPrompt, userPrompt, mode, history);
+      if (!text) throw new Error('Groq returned an empty response');
+      return { text, provider: 'groq' };
     } catch (fallbackErr) {
       console.error(`[Groq] Fallback also failed: ${fallbackErr.message}`);
       throw new Error('All AI providers failed. Please try again later.');
