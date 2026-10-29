@@ -21,9 +21,9 @@ export default function ResponseDisplay({ response, verses }) {
       {/* Animated Scene (shows when image exists) */}
       <AnimatedScene text={response} speaking={speaking} />
 
-      <div className="bg-white/70 rounded-xl p-6 md:p-8 shadow-md border border-parchment-300">
+      <div className="bg-white/70 rounded-xl p-5 sm:p-6 md:p-8 shadow-md border border-parchment-300">
         {/* Listen Button */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-3 sm:mb-4">
           <button
             onClick={handleListen}
             className="flex items-center gap-2 px-4 py-2 rounded-lg font-sans text-sm
@@ -51,7 +51,7 @@ export default function ResponseDisplay({ response, verses }) {
 
         {/* AI Response with Red Letter formatting */}
         <div
-          className="font-serif text-lg leading-relaxed whitespace-pre-wrap"
+          className="font-serif text-[17px] sm:text-lg leading-relaxed whitespace-pre-wrap"
           dangerouslySetInnerHTML={{ __html: formattedResponse }}
         />
 

@@ -14,6 +14,10 @@ export const translations = {
     listen: 'Listen',
     stopListening: 'Stop',
     errorMessage: 'Something went wrong. Please try again.',
+    emptyTitle: 'Ask anything.',
+    emptySubtitle: 'He is listening.',
+    enterHint: 'Enter to send · Shift+Enter for new line',
+    languageLabel: 'Language',
   },
   es: {
     appTitle: 'Reflexión de Letras Rojas',
@@ -30,6 +34,10 @@ export const translations = {
     listen: 'Escuchar',
     stopListening: 'Detener',
     errorMessage: 'Algo salió mal. Inténtalo de nuevo.',
+    emptyTitle: 'Pregunta lo que quieras.',
+    emptySubtitle: 'Él te escucha.',
+    enterHint: 'Enter para enviar · Shift+Enter para nueva línea',
+    languageLabel: 'Idioma',
   },
   la: {
     appTitle: 'Reflectio Verborum Rubrorum',
@@ -46,6 +54,10 @@ export const translations = {
     listen: 'Audi',
     stopListening: 'Siste',
     errorMessage: 'Aliquid erravit. Iterum tempta.',
+    emptyTitle: 'Roga quidquid vis.',
+    emptySubtitle: 'Ille te audit.',
+    enterHint: 'Enter ut mittas · Shift+Enter pro nova linea',
+    languageLabel: 'Lingua',
   },
   gr: {
     appTitle: 'Ἐν Ἐρυθροῖς Γράμμασι',
@@ -62,5 +74,9 @@ export const translations = {
     listen: 'Ακούστε',
     stopListening: 'Σταμάτα',
     errorMessage: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
+    emptyTitle: 'Ρώτησε ό,τι θέλεις.',
+    emptySubtitle: 'Σε ακούει.',
+    enterHint: 'Enter για αποστολή · Shift+Enter για νέα γραμμή',
+    languageLabel: 'Γλώσσα',
   },
 };

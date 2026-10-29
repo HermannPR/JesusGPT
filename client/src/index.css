@@ -12,6 +12,9 @@ html, body, #root {
   --color-parchment-300: #e8d8b0;
   --color-parchment-400: #d4bc8a;
   --color-parchment-500: #c0a070;
+  --color-parchment-600: #a8875a;
+  --color-parchment-700: #8a6d45;
+  --color-parchment-800: #6b5434;
   --color-red-letter: #B22222;
   --font-serif: 'Libre Baskerville', Georgia, serif;
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -26,6 +29,8 @@ html, body, #root {
 
 body {
   margin: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background-color: var(--color-parchment-50);
   color: #1f2937;
   font-family: var(--font-serif);

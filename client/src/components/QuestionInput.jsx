@@ -4,7 +4,10 @@ import { useLanguage } from '../context/LanguageContext';
 import { useReflection } from '../hooks/useReflection';
 
 const MIN_H = 72;
+const MIN_H_PHONE = 48; // one line of text plus padding
 const MAX_H = 200;
+
+const minHeight = () => (window.matchMedia('(max-width: 639px)').matches ? MIN_H_PHONE : MIN_H);
 
 export default function QuestionInput({ onResponse, onAsk, onFail, history = [] }) {
   const { t, language } = useLanguage();
@@ -16,12 +19,12 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
   const adjustHeight = useCallback((reset) => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = `${MIN_H}px`;
+    el.style.height = `${minHeight()}px`;
     if (!reset) el.style.height = `${Math.min(el.scrollHeight, MAX_H)}px`;
   }, []);
 
   useEffect(() => {
-    if (textareaRef.current) textareaRef.current.style.height = `${MIN_H}px`;
+    if (textareaRef.current) textareaRef.current.style.height = `${minHeight()}px`;
   }, []);
 
   const submit = async () => {
@@ -29,7 +32,7 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
     if (!text || loading) return;
     setQuestion('');
     adjustHeight(true);
-    onAsk?.();
+    onAsk?.(text);
     const data = await fetchReflection({ question: text, language, mode, history });
     if (data) {
       onResponse(text, data);
@@ -59,22 +62,23 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
           onKeyDown={handleKeyDown}
           placeholder={t('inputPlaceholder')}
           disabled={loading}
-          style={{ height: MIN_H, maxHeight: MAX_H }}
+          rows={1}
+          style={{ height: minHeight(), maxHeight: MAX_H }}
           className="w-full px-4 py-3 resize-none bg-transparent font-serif text-base text-gray-800
                      placeholder:text-parchment-300 focus:outline-none disabled:opacity-50 overflow-auto block"
         />
 
         {/* Divider + controls row — never overlaps textarea */}
-        <div className="border-t border-parchment-100 flex items-center justify-between px-3 py-2 bg-parchment-50/50">
+        <div className="border-t border-parchment-100 flex items-center justify-between gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-parchment-50/50">
           {/* Mode pills */}
-          <div className="flex gap-1">
+          <div className="flex gap-1 min-w-0">
             {[['direct', t('modeDirectLabel')], ['parable', t('modeParableLabel')]].map(([m, label]) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
                 disabled={loading}
-                className={`px-3 py-1 rounded-full text-xs font-sans font-semibold transition-colors
+                className={`px-3 py-3 sm:py-1 rounded-full text-xs font-sans font-semibold leading-4 transition-colors
                   ${mode === m
                     ? 'bg-parchment-400 text-gray-900'
                     : 'text-parchment-500 hover:bg-parchment-100'
@@ -90,7 +94,8 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
             type="button"
             onClick={submit}
             disabled={loading || !question.trim()}
-            className={`p-1.5 rounded-lg transition-all flex items-center justify-center
+            aria-label={t('buttonText')}
+            className={`shrink-0 w-10 h-10 sm:w-7 sm:h-7 rounded-lg transition-all flex items-center justify-center
               ${question.trim() && !loading
                 ? 'bg-parchment-500 hover:bg-parchment-600 text-white'
                 : 'bg-parchment-100 text-parchment-300 cursor-not-allowed'
@@ -105,7 +110,8 @@ export default function QuestionInput({ onResponse, onAsk, onFail, history = [] 
       </div>
 
       {error && <p role="alert" className="text-center text-red-600 font-sans text-sm">{t('errorMessage')}</p>}
-      <p className="text-center text-parchment-300 font-sans text-xs">Enter to send · Shift+Enter for new line</p>
+      {/* Keyboard hint only makes sense with a physical keyboard */}
+      <p className="hidden sm:block text-center text-parchment-300 font-sans text-xs">{t('enterHint')}</p>
     </div>
   );
 }

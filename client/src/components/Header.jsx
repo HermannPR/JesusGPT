@@ -5,7 +5,7 @@ export default function Header({ compact }) {
 
   if (compact) {
     return (
-      <h1 className="font-serif text-xl text-red-letter tracking-wide">
+      <h1 className="min-w-0 font-serif text-lg sm:text-xl leading-tight text-red-letter tracking-wide">
         {t('appTitle')}
       </h1>
     );
